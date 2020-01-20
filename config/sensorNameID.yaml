@@ -1,10 +1,10 @@
 sensorNameID:
   baseBoard: 200
-  mpu6050: 200
-  led:     17
-  pressure1:    111
-  pressure2:    112
-  color: 101
-  photosensitive: 102
-  fan: 103
-  infrared: 104
+  illuminance: 100
+  humiture: 101
+  infrared: 102
+  color: 103
+  fire: 104
+  fan: 105
+  gas: 106
+  touch: 107

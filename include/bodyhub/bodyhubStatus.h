@@ -20,7 +20,8 @@ enum StateStyle {
   pause,
   stoping,
   error,
-  directOperate
+  directOperate,
+  walking
 };
 }
 

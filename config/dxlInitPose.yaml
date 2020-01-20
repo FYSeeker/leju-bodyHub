@@ -2,8 +2,8 @@
 InitPose:
   ID1: 0
   ID2: 0
-  ID3: 45
-  ID4: -45
+  ID3: 0
+  ID4: 0
   ID5: 0
   ID6: 0
   ID7: 0
@@ -13,10 +13,12 @@ InitPose:
   ID11: 0
   ID12: 0
   ID13: 0
-  ID14: 0
-  ID15: 0
+  ID14: -100
+  ID15: -30
   ID16: 0
-  ID17: 0
-  ID18: 0
+  ID17: 100
+  ID18: 30
   ID19: 0
   ID20: 0
+  ID21: 0
+  ID22: 0

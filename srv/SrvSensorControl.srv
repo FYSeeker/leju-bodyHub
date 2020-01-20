@@ -1,7 +1,0 @@
-string SensorName
-uint16 SetAddr
-uint8[] Paramete
-
----
-
-string Result

@@ -14,11 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   dynamixel_sdk
   dynamixel_workbench_toolbox
+  cmake_modules
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+find_package(Eigen REQUIRED)
 find_package(Boost REQUIRED COMPONENTS 
   system
   thread
@@ -59,6 +61,7 @@ add_message_files(
   JointControlPoint.msg
   ServoPositionAngle.msg
   SensorRawData.msg
+  SensorControl.msg
 )
 
 # Generate services in the 'srv' folder
@@ -75,7 +78,6 @@ add_service_files(
   SrvServoWrite.srv
   SrvServoAllWrite.srv
   SrvServoAllRead.srv
-  SrvSensorControl.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -137,12 +139,22 @@ include_directories(
 include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${EIGEN_INCLUDE_DIR}
+
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/RBDyn/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/SpaceVecAlg/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/walkPlaning/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/bodyhub/
 )
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/BodyHubNode.cpp
+  src/ExtendSensor.cpp
+  src/SimControll.cpp
 )
+add_dependencies(${PROJECT_NAME} ${BodyHubNode_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -169,10 +181,11 @@ add_library(${PROJECT_NAME}
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(BodyHubNode src/BodyHubNode.cpp)
+add_executable(BodyHubNode src/BodyHubNode.cpp src/ExtendSensor src/SimControll.cpp)
 add_dependencies(BodyHubNode ${BodyHubNode_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(BodyHubNode -lrt yaml-cpp ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-add_dependencies(${PROJECT_NAME} ${BodyHubNode_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(BodyHubNode -lrt yaml-cpp ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${EIGEN_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/libWalkingEngine.so
+${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/RBDyn/libRBDyn.so
+)
 
 #############
 ## Install ##
