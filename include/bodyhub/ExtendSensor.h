@@ -22,6 +22,6 @@ bool SensorWrite(uint8_t WriteCount, uint8_t *WriteID, uint16_t *WriteAddress,
                  uint8_t WriteData[][CONTROL_DATA_SIZE_MAX]);
 
 void ExtendSensorThread(void);
-void ExtendSensorTime(void);
+void ExtendSensorTimerThread(void);
 
 #endif

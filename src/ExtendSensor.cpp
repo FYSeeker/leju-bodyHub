@@ -2,10 +2,6 @@
 
 #define DEGUG_EN 0
 
-extern DynamixelWorkbench dxlTls;
-extern std::string sensorNameIDFile;
-extern pthread_mutex_t MutexBulkRead;
-
 pthread_mutex_t MtuexSensorList;
 pthread_mutex_t MtuexSensorControl;
 
@@ -39,7 +35,6 @@ bool SensorWrite(uint8_t WriteCount, uint8_t *WriteID, uint16_t *WriteAddress,
 }
 
 void SensorbulkReadPoll() {
-  pthread_mutex_lock(&MtuexSensorList);
   if (SensorsList.size()) {
     bodyhub::SensorRawData sensorRawDataMsg;
 
@@ -49,6 +44,8 @@ void SensorbulkReadPoll() {
     uint16_t bulkReadLength[readCount];
     uint8_t readDataLength = 0;
     uint8_t idNum = 0;
+
+    pthread_mutex_lock(&MtuexSensorList);
     for (auto s_it = SensorsList.begin(); s_it != SensorsList.end(); s_it++) {
       bulkReadID[idNum] = (*s_it)->sensorID;
       bulkReadAddress[idNum] = (*s_it)->startAddr;
@@ -56,6 +53,7 @@ void SensorbulkReadPoll() {
       readDataLength += (*s_it)->length;
       idNum++;
     }
+    pthread_mutex_unlock(&MtuexSensorList);
 
     int32_t bulkReadData[readDataLength];
     uint8_t dataIndex = 0;
@@ -83,7 +81,6 @@ void SensorbulkReadPoll() {
     sensorRawDataMsg.dataLength = readDataLength;
     SensorRawDataPub.publish(sensorRawDataMsg);
   }
-  pthread_mutex_unlock(&MtuexSensorList);
 }
 
 void SensorControlPoll() {
@@ -143,7 +140,6 @@ void LoadSensorNameID(const std::string path) {
 }
 
 void addSensorModule(SensorModule *tempSensor) {
-  pthread_mutex_lock(&MtuexSensorList);
   // check whether the nodule length is zero
   if (tempSensor->length == 0) {
     ROS_ERROR("sensorBulkReadLength is illegal.");
@@ -151,6 +147,7 @@ void addSensorModule(SensorModule *tempSensor) {
     return;
   }
   // check whether the module name already exists
+  pthread_mutex_lock(&MtuexSensorList);
   for (auto s_it = SensorsList.begin(); s_it != SensorsList.end(); s_it++) {
     if ((*s_it)->sensorName == tempSensor->sensorName) {
       (*s_it)->length = tempSensor->length;
@@ -159,6 +156,8 @@ void addSensorModule(SensorModule *tempSensor) {
       SensorDataMap.erase(tempSensor->sensorID);
       SensorDataMap[tempSensor->sensorID] = new uint8_t[tempSensor->length];
       delete tempSensor;
+
+      pthread_mutex_unlock(&MtuexSensorList);
       return;
     }
   }
@@ -167,6 +166,7 @@ void addSensorModule(SensorModule *tempSensor) {
   } catch (const std::out_of_range &e) {
     ROS_ERROR("%s -- [%s] sensorName is illegal.", e.what(),
               tempSensor->sensorName.c_str());
+    pthread_mutex_unlock(&MtuexSensorList);
     return;
   }
 
@@ -252,9 +252,11 @@ void SensorControlCallback(const bodyhub::SensorControl::ConstPtr &msg) {
   ControlParamete.id = SensorNameIDMap.at(msg->SensorName);
   ControlParamete.addr = msg->SetAddr;
   ControlParamete.lenght = msg->ParamList.size();
-  // ROS_INFO("name: %s, id: %d, addr: %d, paramLen: %d",
-  // msg->SensorName.c_str(), ControlParamete.id, ControlParamete.addr,
-  // ControlParamete.lenght);
+#if DEGUG_EN
+  ROS_INFO("name: %s, id: %d, addr: %d, paramLen: %d",
+  msg->SensorName.c_str(), ControlParamete.id, ControlParamete.addr,
+  ControlParamete.lenght);
+#endif
   if (ControlParamete.lenght > (CONTROL_DATA_SIZE_MAX - 1)) {
     ROS_ERROR("SensorControlCallback(): Too many parameters!");
     return;
@@ -291,18 +293,21 @@ void ExtendSensorInit() {
 }
 
 void ExtendSensorThread() {
+  if (SimControll::simEnable) return;
   ROS_INFO("Start 'ExtendSensorThread' thread...");
   ExtendSensorInit();
 
+  ros::Rate loop_rate(1000);
   while (ros::ok()) {
     ros::spinOnce();
-    usleep(1000);
+    loop_rate.sleep();
   }
   return;
 }
 
-void ExtendSensorTime() {
-  ROS_INFO("Start 'ExtendSensorTime' thread...");
+void ExtendSensorTimerThread() {
+  if (SimControll::simEnable) return;
+  ROS_INFO("Start 'ExtendSensorTimerThread' thread...");
   uint32_t timeCycle = 50;  // ms
   static struct timespec nextTime;
   clock_gettime(CLOCK_MONOTONIC, &nextTime);

@@ -71,113 +71,19 @@ Kalman* measuredJointFilter[30];
 void jointFilter();
 void jointFilterInit();
 
-// int assembleOffset[20] = {0,20,100,20,50,30,
-// 							  0,0,-50,0,0,-40,
-// 0,0,0,
-// 0,0,0,	0,0};
-// int assembleOffset[20] = {0,20,60,20,40,35,
-// 							  0,0,-20,-40,-30,-35,
-// 0,0,0,
-// 0,0,0,	0,0};
-// int assembleOffset[20] = {0,20,60,20,40,45,
-// 							  -20,0,-20,-40,-30,-45,
-// 0,0,0,
-// 0,0,0,	0,0};
+// int assembleOffset[22] = {-31,17,-2,-159,-73,-158,   20,9,-115,3,52,70,
+// -60,-793,-148,29,1052,82,150,-25, 17, 7};//3号
 
-// int assembleOffset[20] = {0,20,120,20,40,45,
-// 							  -20,0,-80,-40,-30,-45,
-// 0,0,0,
-// 0,0,0,	0,0};//3.35
-// int assembleOffset[20] = {0,20,180,20,40,45,
-// 							  -20,0,-140,-40,-40,-45,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38
-// int assembleOffset[20] = {0,-15,190,20,40,10,
-// 							  -20,33,-140,-40,-40,-15,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38
-// int assembleOffset[20] = {0,-15,190,20,40,5,
-// 							  -20,33,-145,-40,-40,-10,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38 openloop1 com
-// int assembleOffset[20] = {0,-30,190,20,40,5,
-// 							  -20,48,-145,-40,-40,-10,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38 openloop1 com
-// int assembleOffset[20] = {0,-20,190,20,40,20,
-// 							  -20,38,-140,-40,-40,-20,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38 openloop1 com
-// int assembleOffset[20] = {0,-25,190,20,40,20,
-// 							  20,38,-135,-40,-40,5,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38 openloop1 com
-// int assembleOffset[20] = {0,-20,190,20,40,25,
-// 							  20,38,-135,-40,-40,-5,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38 openloop1 com
-// int assembleOffset[20] = {0,-20,190,20,40,30,
-// 							  20,38,-135,-40,-40,-7,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38 openloop1 com  fsr
-// int assembleOffset[20] = {0,-15,190,20,40,10,
-// 							  -20,33,-140,-40,-40,-20,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38
-// int assembleOffset[20] = {0,-15,160,20,40,30,
-// 							  -20,33,-110,-40,-40,-20,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38
-// int assembleOffset[20] = {0,-15,185,25,35,25,
-// 							  -20,33,-140,-40,-40,-5,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38	  footSeprate=0.051*2;  //TimeCon_y=0.95
-// int assembleOffset[20] = {0,-15,180,25,35,28,
-// 							  -20,33,-148,-45,-45,-15,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38;
-// int assembleOffset[20] = {0,-15,185,25,30,25,
-// 							  -20,33,-150,-45,-45,-15,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38;
-// int assembleOffset[20] = {0,-15,185,25,30,25,
-// 							  -20,33,-150,-45,-45,-10,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38;	cap
-// int assembleOffset[20] = {0,-15,185,25,30,25,
-// 							  -20,33,-150,-45,-45,-10,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38;	cap
-// int assembleOffset[20] = {0,-15,185,25,30,35,
-// 							  -20,33,-150,-45,-45,-25,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38;	cap 1.0s
-// int assembleOffset[20] = {0,-15,185,25,30,35,
-// 							  -20,33,-150,-45,-45,-15,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38;	60cmLIPM
-// int assembleOffset[20] = {0,-15,185,25,30,30,
-// 							  -20,33,-150,-45,-45,-15,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 3.38;	60cmLIPM
-// int assembleOffset[20] = {0,-15,185,25,30,25,
-// 							  -20,33,-150,-45,-45,-10,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38;	60cmLIPM
-// int assembleOffset[20] = {0,-15,185,25,30,40,
-// 							  -20,33,-150,-45,-45,-10,
-// 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38;  1.0s	60cmLIPM
-// int assembleOffset[20] = {0,-15,185,25,30,20,//40
-// 						-20,33,-150,-45,-45,-10, 0,0,0,
-// 0,0,0,	0,0};//add mass to 5.38;  0.6s	60cmLIPM
+// int assembleOffset[22] = {45,-8,-38,-38,-95,-50,   -43,0,57,52,36,74,
+// 81,-184,52,32,0,-160,-129,0, 0, 0};//0号
 
-// int assembleOffset[22] = {71,118,128,-72,78,20,   -12,23,38,20,-102,8,
-// 0,210,0, -136,0,97,0,0,  0,35};//###### Wed Aug 21 16:44:55 CST 2019  last
-int assembleOffset[22] = {
-    71, 128, 128, -72,  78, 28, -52, 23, 38, 20, -102, 23,
-    0,  210, 0,   -136, 0,  97, 0,   0,  0,  35};  //###### Wed Aug 21 16:44:55
-                                                   // CST 2019
+int assembleOffset[22] = {-31,  46,  -34, 54, -101, 17,  20,   -138,
+                          -44,  -84, 106, 79, -98,  107, -108, 41,
+                          -121, 199, 132, 0,  0,    0};  // 5号
+
+// int assembleOffset[22] = {-22,-96,1,-115,-4,1202,   0,66,-123,-65,-43,41,
+// -1293,-52,6,42,20,19,170,-42, 35, 260};//6号
+
 // int assembleOffset[22] = {71,118,128,-92,38,20,   -12,23,38,20,-62,8,
 // 0,210,0, -136,0,97,0,0,  0,35};//###### Wed Aug 21 16:44:55 CST 2019
 
@@ -189,8 +95,9 @@ int assembleOffset[22] = {
 // 							  -20,0,-220,-40,-40,-45,
 // 0,0,0,
 // 0,0,0,	0,0};//add mass to 5.38	 squat
-int angleDirection[20] = {1,  1,  -1, -1, 1, -1, 1, 1, 1, 1,
-                          -1, -1, 1,  1,  1, 1,  1, 1, 1, 1};
+
+int angleDirection[22] = {1,  1, -1, -1, 1, -1, 1, 1, 1, 1, -1,
+                          -1, 1, 1,  1,  1, 1,  1, 1, 1, 1, 1};
 
 bool initSDKHandlers(void);
 bool initDxlWorkbench(void);
@@ -256,6 +163,22 @@ ros::Publisher stepPhase_pub;
 
 ros::Publisher JY901X;
 ros::Publisher JY901Y;
+
+ros::Publisher PLANfoot_pub;
+ros::Publisher Rfoot_pub;
+ros::Publisher Lfoot_pub;
+ros::Publisher Lyfoot_pub;
+ros::Publisher Lxfoot_pub;
+ros::Publisher Ryfoot_pub;
+ros::Publisher Rxfoot_pub;
+ros::Publisher PLANRfoot_pub;
+ros::Publisher PLANLfoot_pub;
+
+ros::Publisher Torso_Ppub;
+ros::Publisher Torso_Rpub;
+
+ros::Publisher RRoffset_pub;
+ros::Publisher LLoffset_pub;
 
 void robotStatePublish();
 void advertise();

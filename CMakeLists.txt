@@ -3,6 +3,7 @@ project(bodyhub)
 
 # Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
+# set(CMAKE_BUILD_TYPE Release)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -23,7 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Eigen REQUIRED)
 find_package(Boost REQUIRED COMPONENTS 
   system
-  thread
+  # thread
   )
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -152,9 +153,22 @@ include
 add_library(${PROJECT_NAME}
   src/BodyHubNode.cpp
   src/ExtendSensor.cpp
-  src/SimControll.cpp
+  src/SimControl.cpp
 )
-add_dependencies(${PROJECT_NAME} ${BodyHubNode_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}
+  ${BodyHubNode_EXPORTED_TARGETS}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(bodyhub
+  -ldl -lrt yaml-cpp
+  ${catkin_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${EIGEN_LIBRARIES}
+  ${PROJECT_SOURCE_DIR}/lib/libWalkingEngine.so
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/RBDyn/libRBDyn.so
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/osqp/libosqp.so
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -181,10 +195,23 @@ add_dependencies(${PROJECT_NAME} ${BodyHubNode_EXPORTED_TARGETS} ${${PROJECT_NAM
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(BodyHubNode src/BodyHubNode.cpp src/ExtendSensor src/SimControll.cpp)
-add_dependencies(BodyHubNode ${BodyHubNode_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(BodyHubNode -lrt yaml-cpp ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${EIGEN_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/libWalkingEngine.so
-${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/RBDyn/libRBDyn.so
+aux_source_directory(./src SRC_DIRS)
+add_executable(BodyHubNode ${SRC_DIRS})
+
+add_dependencies(BodyHubNode
+  ${BodyHubNode_EXPORTED_TARGETS}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+)
+
+target_link_libraries(BodyHubNode
+  -ldl -lrt yaml-cpp
+  ${catkin_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${EIGEN_LIBRARIES}
+  ${PROJECT_SOURCE_DIR}/lib/libWalkingEngine.so
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/RBDyn/libRBDyn.so
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/WalkingEngine/osqp/libosqp.so
 )
 
 #############

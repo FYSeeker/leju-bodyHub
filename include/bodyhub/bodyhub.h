@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <mutex>
 
 #include <signal.h>
 #include <sys/time.h>  //int gettimeofday(struct timeval *, struct timezone *);
@@ -39,11 +40,13 @@
 #include "std_msgs/Float64.h"
 #include "std_msgs/Float64MultiArray.h"
 #include "std_msgs/UInt16.h"
+#include "sensor_msgs/JointState.h"
 
 #include "WalkingEngine/walkPlaning/CPWalking5.h"
 #include "WalkingEngine/walkPlaning/LIPMWalk.h"
 
 #include "ExtendSensor.h"
+#include "SimControll.h"
 
 #define DEBUG
 // #define SIM_ROBOT
@@ -58,11 +61,44 @@
 #define DXL_ID_SCAN_RANGE 25               // Dynamixel ID scan range
 #define DXL_ID_COUNT_MAX (SERVO_NUM + 20)  // Dynamixel ID count
 
+#define SIZE_LIMIT(value, limit) (((value) > (limit)) ? (limit) : (value))
+#define SERVO_DEFAULT_ANGLE 0
+#define SERVO_DEFAULT_VALUE 2048
+
 struct MotoPoint {
   double position;  // radian
   double velocity;
   double acceleration;
 };
+
+struct ServoStore_s
+{
+  std::vector<double> angle;
+  std::vector<double> value;
+};
+
+// extern
+extern std::string sensorNameIDFile;
+
+extern pthread_mutex_t mtxMo;
+extern pthread_mutex_t mtxHe;
+extern pthread_mutex_t mtxWl;
+extern pthread_mutex_t MutexBulkRead;
+
+extern DynamixelWorkbench dxlTls;
+
+extern std::mutex mtxJointTrajQueue;
+extern std::queue<sensor_msgs::JointState> jointTrajQueue;
+
+extern std::queue<bodyhub::JointControlPoint> motoQueue;
+extern std::queue<bodyhub::JointControlPoint> headCtrlQueue;
+
+extern uint8_t bodyhubState;
+
+extern ros::Publisher ServoPositionPub;
+
+// function
+double Angle2Radian(double angle);
 
 void UpdateState(uint8_t stateNew);
 void ClearTimerQueue(void);
@@ -77,5 +113,7 @@ bool RawBulkRead(uint8_t *bulkReadID, uint8_t readCount,
 bool SensorBulkWrite(uint8_t WriteCount, uint8_t *bulkWriteID,
                      uint16_t *bulkWriteAddress, uint16_t *bulkWriteLenght,
                      int32_t *bulkWriteData);
+
+void control_thread_robot(void);
 
 #endif
